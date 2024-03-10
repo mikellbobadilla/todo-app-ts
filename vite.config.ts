@@ -6,7 +6,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://192.168.100.135:8080'
+      '/server': {
+        target: 'http://192.168.100.135:8080',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/server/, '')
+      }
     }
   }
 })
