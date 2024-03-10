@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 /* Declared types */
 export interface Todo {
@@ -41,12 +41,38 @@ export const todosSlice = createSlice({
     initialState,
     reducers: {
         // Logic to add a todo and manage the state
+        deleteTodoById: (state, action: PayloadAction<TodoId>) => {
+            const id = action.payload
+            return state.filter(todo => todo.id !== id)
+        },
+        createTodo: (state, action: PayloadAction<Todo>) => {
+            const newTodo: TodoWithId = {
+                id: crypto.randomUUID(),
+                ...action.payload
+            }
+            state.push(newTodo)
+        },
+        updateSetIsDone: (state, action: PayloadAction<{ id: TodoId, isDone: boolean }>) => {
+            const { id, isDone } = action.payload
+            const todo = state.find(todo => todo.id === id)
+            if (todo) {
+                todo.isDone = isDone
+            }
+        },
+        updateTodoById: (state, action: PayloadAction<{ id: TodoId, todo: Todo }>) => {
+            const { id, todo } = action.payload
+            const todoToUpdate = state.find(todo => todo.id === id)
+            if (todoToUpdate) {
+                todoToUpdate.title = todo.title
+                todoToUpdate.description = todo.description
+                todoToUpdate.targetDate = todo.targetDate
+            }
+        }
     }
 })
 
 // Export the action creators
 export default todosSlice.reducer
 
-// Todo: Use the following code to export the action creators
-// export const { } = todosSlice.actions
+export const { deleteTodoById, createTodo, updateSetIsDone, updateTodoById } = todosSlice.actions
 
